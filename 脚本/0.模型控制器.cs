@@ -2,72 +2,80 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Ä£ĞÍ¿ØÖÆÆ÷ - Ìá¹©Ğı×ª¡¢ÒÆ¶¯ºÍËõ·Å¹¦ÄÜ£¬Ö§³ÖÆ½»¬¹ı¶ÉºÍÁ¢¼´ÖØÖÃ
+/// æ¨¡å‹æ§åˆ¶å™¨ - æä¾›æ—‹è½¬ã€ç§»åŠ¨å’Œç¼©æ”¾åŠŸèƒ½ï¼Œæ”¯æŒå¹³æ»‘è¿‡æ¸¡å’Œç«‹å³é‡ç½®
 /// </summary>
 public class ModelControllerWorldRotation : MonoBehaviour
 {
-    // ========== Ğı×ªÉèÖÃ ==========
-    [Header("Ğı×ªÉèÖÃ")]
-    [Tooltip("Êó±êÍÏ¶¯Ê±µÄĞı×ªËÙ¶È")]
+    // ========== æ—‹è½¬è®¾ç½® ==========
+    [Header("æ—‹è½¬è®¾ç½®")]
+    [Tooltip("é¼ æ ‡æ‹–åŠ¨æ—¶çš„æ—‹è½¬é€Ÿåº¦")]
     public float rotationSpeed = 3f;
-    [Tooltip("XÖáĞı×ªµÄ×îĞ¡½Ç¶ÈÏŞÖÆ")]
+    [Tooltip("Xè½´æ—‹è½¬çš„æœ€å°è§’åº¦é™åˆ¶")]
     public float minXRotation = -80f;
-    [Tooltip("XÖáĞı×ªµÄ×î´ó½Ç¶ÈÏŞÖÆ")]
+    [Tooltip("Xè½´æ—‹è½¬çš„æœ€å¤§è§’åº¦é™åˆ¶")]
     public float maxXRotation = 80f;
-    [Tooltip("Ğı×ª¶¯»­µÄÆ½»¬Ê±¼ä£¨ÖµÔ½´óÔ½Æ½»¬µ«ÏìÓ¦Ô½Âı£©")]
+    [Tooltip("æ—‹è½¬åŠ¨ç”»çš„å¹³æ»‘æ—¶é—´ï¼ˆå€¼è¶Šå¤§è¶Šå¹³æ»‘ä½†å“åº”è¶Šæ…¢ï¼‰")]
     public float rotationSmoothTime = 0.1f;
-    [Tooltip("Ğı×ª·½Ïò£¨1ÎªÕı³£·½Ïò£¬-1Îª·´ÏòĞı×ª£©")]
+    [Tooltip("æ—‹è½¬æ–¹å‘ï¼ˆ1ä¸ºæ­£å¸¸æ–¹å‘ï¼Œ-1ä¸ºåå‘æ—‹è½¬ï¼‰")]
     public int direction = 1;
-    [Tooltip("ÖØÖÃĞı×ªÊ±µÄÄ¬ÈÏ½Ç¶È")]
+    [Tooltip("é‡ç½®æ—‹è½¬æ—¶çš„é»˜è®¤è§’åº¦")]
     public Vector3 defaultRotation = Vector3.zero;
-    [Tooltip("ÖØÖÃÊ±Ğı×ªÆ½»¬Ê±¼äµÄ¼ÓËÙ±¶ÂÊ£¨ÖµÔ½´óÖØÖÃÔ½¿ì£©")]
+    [Tooltip("é‡ç½®æ—¶æ—‹è½¬å¹³æ»‘æ—¶é—´çš„åŠ é€Ÿå€ç‡ï¼ˆå€¼è¶Šå¤§é‡ç½®è¶Šå¿«ï¼‰")]
     public float resetSpeedMultiplier = 5f;
-    [Tooltip("ÊÇ·ñÆôÓÃĞı×ª¹¦ÄÜ")]
+    [Tooltip("æ˜¯å¦å¯ç”¨æ—‹è½¬åŠŸèƒ½")]
     public bool enableRotation = true;
+    [Tooltip("æ—‹è½¬æ¨¡å¼ (0 = è‡ªç”±æ—‹è½¬, 1 = å•å‘æ—‹è½¬åŸºäºè¾ƒå¤§ç§»åŠ¨æ–¹å‘)")]
+    public int rotationMode = 1;
 
-    // ========== ÒÆ¶¯ÉèÖÃ ==========
-    [Header("ÒÆ¶¯ÉèÖÃ")]
-    [Tooltip("Êó±êÍÏ¶¯Ê±µÄÒÆ¶¯ËÙ¶È")]
+    // ========== ç§»åŠ¨è®¾ç½® ==========
+    [Header("ç§»åŠ¨è®¾ç½®")]
+    [Tooltip("é¼ æ ‡æ‹–åŠ¨æ—¶çš„ç§»åŠ¨é€Ÿåº¦")]
     public float moveSpeed = 5f;
-    [Tooltip("XÖáÒÆ¶¯µÄ×îĞ¡ºÍ×î´ó·¶Î§")]
+    [Tooltip("Xè½´ç§»åŠ¨çš„æœ€å°å’Œæœ€å¤§èŒƒå›´")]
     public Vector2 xMoveLimit = new Vector2(-10, 10);
-    [Tooltip("YÖáÒÆ¶¯µÄ×îĞ¡ºÍ×î´ó·¶Î§")]
+    [Tooltip("Yè½´ç§»åŠ¨çš„æœ€å°å’Œæœ€å¤§èŒƒå›´")]
     public Vector2 yMoveLimit = new Vector2(-5, 5);
-    [Tooltip("ZÖáÒÆ¶¯µÄ×îĞ¡ºÍ×î´ó·¶Î§")]
+    [Tooltip("Zè½´ç§»åŠ¨çš„æœ€å°å’Œæœ€å¤§èŒƒå›´")]
     public Vector2 zMoveLimit = new Vector2(-10, 10);
-    [Tooltip("ÒÆ¶¯¶¯»­µÄÆ½»¬Ê±¼ä")]
+    [Tooltip("ç§»åŠ¨åŠ¨ç”»çš„å¹³æ»‘æ—¶é—´")]
     public float moveSmoothTime = 0.1f;
-    [Tooltip("ÊÇ·ñÆôÓÃÒÆ¶¯¹¦ÄÜ")]
+    [Tooltip("æ˜¯å¦å¯ç”¨ç§»åŠ¨åŠŸèƒ½")]
     public bool enableMovement = true;
 
-    // ========== Ëõ·ÅÉèÖÃ ==========
-    [Header("Ëõ·ÅÉèÖÃ")]
-    [Tooltip("¹öÂÖËõ·ÅµÄËÙ¶È")]
+    // ========== ç¼©æ”¾è®¾ç½® ==========
+    [Header("ç¼©æ”¾è®¾ç½®")]
+    [Tooltip("æ»šè½®ç¼©æ”¾çš„é€Ÿåº¦")]
     public float zoomSpeed = 5f;
-    [Tooltip("Ëõ·ÅµÄ×îĞ¡ºÍ×î´ó·¶Î§")]
+    [Tooltip("ç¼©æ”¾çš„æœ€å°å’Œæœ€å¤§èŒƒå›´")]
     public Vector2 scaleLimit = new Vector2(0.5f, 3f);
-    [Tooltip("Ëõ·Å¶¯»­µÄÆ½»¬Ê±¼ä")]
+    [Tooltip("ç¼©æ”¾åŠ¨ç”»çš„å¹³æ»‘æ—¶é—´")]
     public float zoomSmoothTime = 0.1f;
-    [Tooltip("ÖØÖÃËõ·ÅÊ±µÄÄ¬ÈÏ´óĞ¡")]
+    [Tooltip("é‡ç½®ç¼©æ”¾æ—¶çš„é»˜è®¤å¤§å°")]
     public float defaultScale = 1f;
-    [Tooltip("ÊÇ·ñÆôÓÃËõ·Å¹¦ÄÜ")]
+    [Tooltip("æ˜¯å¦å¯ç”¨ç¼©æ”¾åŠŸèƒ½")]
     public bool enableZoom = true;
 
-    // ========== Ë½ÓĞ±äÁ¿ ==========
-    private Vector3 _currentRotation;      // µ±Ç°Êµ¼ÊĞı×ª½Ç¶È
-    private Vector3 _targetRotation;       // Ä¿±êĞı×ª½Ç¶È
-    private Vector3 _rotationVelocity;     // Ğı×ªÆ½»¬ËÙ¶È
-    private Vector3 _targetPosition;       // Ä¿±êÎ»ÖÃ
-    private float _targetScale;            // Ä¿±êËõ·ÅÖµ
-    private Vector3 _positionVelocity;     // Î»ÖÃÆ½»¬ËÙ¶È
-    private float _scaleVelocity;          // Ëõ·ÅÆ½»¬ËÙ¶È
-    private Vector2 _lastMousePosition;    // ÉÏÒ»Ö¡Êó±êÎ»ÖÃ£¨ÓÃÓÚ¼ÆËãÒÆ¶¯/Ğı×ªÔöÁ¿£©
-    private bool _isResetting = false;     // ÊÇ·ñÕıÔÚÖØÖÃÖĞ
-    private Coroutine _resetCoroutine;     // ÖØÖÃĞ­³ÌÒıÓÃ
-    private bool _useImmediateReset = false; // ÊÇ·ñÊ¹ÓÃÁ¢¼´ÖØÖÃÄ£Ê½
+    // ========== ç§æœ‰å˜é‡ ==========
+    private GameObject _rotationParent;    // ç”¨äºæ—‹è½¬çš„ä¸´æ—¶ç‰©ä½“
+    private Vector3 _currentRotation;      // å½“å‰å®é™…æ—‹è½¬è§’åº¦
+    private Vector3 _targetRotation;       // ç›®æ ‡æ—‹è½¬è§’åº¦
+    private Vector3 _rotationVelocity;     // æ—‹è½¬å¹³æ»‘é€Ÿåº¦
+    private Vector3 _targetPosition;       // ç›®æ ‡ä½ç½®
+    private float _targetScale;            // ç›®æ ‡ç¼©æ”¾å€¼
+    private Vector3 _positionVelocity;     // ä½ç½®å¹³æ»‘é€Ÿåº¦
+    private float _scaleVelocity;          // ç¼©æ”¾å¹³æ»‘é€Ÿåº¦
+    private Vector2 _lastMousePosition;    // ä¸Šä¸€å¸§é¼ æ ‡ä½ç½®ï¼ˆç”¨äºè®¡ç®—ç§»åŠ¨/æ—‹è½¬å¢é‡ï¼‰
+    private bool _isResetting = false;     // æ˜¯å¦æ­£åœ¨é‡ç½®ä¸­
+    private Coroutine _resetCoroutine;     // é‡ç½®åç¨‹å¼•ç”¨
+    private bool _useImmediateReset = false; // æ˜¯å¦ä½¿ç”¨ç«‹å³é‡ç½®æ¨¡å¼
+
+    private void Awake()
+    {
+        _rotationParent = new GameObject("RotationParent_Temp");
+    }
 
     /// <summary>
-    /// ³õÊ¼»¯Ê±ÉèÖÃ³õÊ¼Öµ
+    /// åˆå§‹åŒ–æ—¶è®¾ç½®åˆå§‹å€¼
     /// </summary>
     void Start()
     {
@@ -75,7 +83,7 @@ public class ModelControllerWorldRotation : MonoBehaviour
     }
 
     /// <summary>
-    /// ³õÊ¼»¯ËùÓĞ±äÁ¿ÖµÎªµ±Ç°transformµÄ×´Ì¬
+    /// åˆå§‹åŒ–æ‰€æœ‰å˜é‡å€¼ä¸ºå½“å‰transformçš„çŠ¶æ€
     /// </summary>
     void InitializeValues()
     {
@@ -86,11 +94,11 @@ public class ModelControllerWorldRotation : MonoBehaviour
     }
 
     /// <summary>
-    /// Ã¿Ö¡¸üĞÂ´¦ÀíÊäÈëºÍÆ½»¬¹ı¶É
+    /// æ¯å¸§æ›´æ–°å¤„ç†è¾“å…¥å’Œå¹³æ»‘è¿‡æ¸¡
     /// </summary>
     void Update()
     {
-        // ·ÇÖØÖÃ×´Ì¬²Å´¦ÀíÊäÈë
+        // éé‡ç½®çŠ¶æ€æ‰å¤„ç†è¾“å…¥
         if (!_isResetting)
         {
             if (enableRotation) HandleRotation();
@@ -98,65 +106,82 @@ public class ModelControllerWorldRotation : MonoBehaviour
             if (enableZoom) HandleZoom();
         }
 
-        // Ó¦ÓÃÆ½»¬¹ı¶ÉĞ§¹û
+        // åº”ç”¨å¹³æ»‘è¿‡æ¸¡æ•ˆæœ
         ApplySmoothTransforms();
     }
 
     /// <summary>
-    /// ´¦ÀíĞı×ªÊäÈë£¨ÓÒ¼üÍÏ¶¯£©
+    /// å¤„ç†æ—‹è½¬è¾“å…¥ï¼ˆå³é”®æ‹–åŠ¨ï¼‰
     /// </summary>
     void HandleRotation()
     {
-        // ÓÒ¼ü°´ÏÂÊ±¼ÇÂ¼³õÊ¼×´Ì¬
+        // å³é”®æŒ‰ä¸‹æ—¶è®°å½•åˆå§‹çŠ¶æ€
         if (Input.GetMouseButtonDown(1))
         {
             _lastMousePosition = Input.mousePosition;
-            _currentRotation = transform.eulerAngles;
+            _currentRotation = _rotationParent.transform.eulerAngles;
             _targetRotation = _currentRotation;
         }
 
-        // ÓÒ¼ü°´×¡Ê±¼ÆËãĞı×ª
+        // å³é”®æŒ‰ä½æ—¶è®¡ç®—æ—‹è½¬
         if (Input.GetMouseButton(1))
         {
             Vector2 currentMousePos = Input.mousePosition;
             Vector2 mouseDelta = currentMousePos - _lastMousePosition;
 
-            // ¸ù¾İÊó±êÒÆ¶¯¼ÆËãÄ¿±êĞı×ª½Ç¶È
-            _targetRotation += new Vector3(
-                -mouseDelta.y * rotationSpeed * 0.1f * direction,  // XÖáĞı×ª£¨ÉÏÏÂÒÆ¶¯£©
-                mouseDelta.x * rotationSpeed * 0.1f * direction,   // YÖáĞı×ª£¨×óÓÒÒÆ¶¯£©
-                0                                                 // ZÖá²»Ğı×ª
-            );
+            if (rotationMode == 1) // å•å‘æ—‹è½¬æ¨¡å¼
+            {
+                // æ¯”è¾ƒæ°´å¹³å’Œå‚ç›´ç§»åŠ¨é‡ï¼Œé€‰æ‹©è¾ƒå¤§çš„æ–¹å‘
+                if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
+                {
+                    // åªè¿›è¡Œæ°´å¹³æ—‹è½¬ï¼ˆç»•ä¸–ç•ŒYè½´ï¼‰
+                    _rotationParent.transform.Rotate(Vector3.up, mouseDelta.x * rotationSpeed * 0.1f * direction, Space.World);
+                }
+                else
+                {
+                    // åªè¿›è¡Œå‚ç›´æ—‹è½¬ï¼ˆç»•ä¸–ç•ŒXè½´ï¼‰
+                    _rotationParent.transform.Rotate(Vector3.right, -mouseDelta.y * rotationSpeed * 0.1f * direction, Space.World);
+                }
+            }
+            else // è‡ªç”±æ—‹è½¬æ¨¡å¼
+            {
+                // åŸºäºä¸–ç•Œåæ ‡ç³»çš„æ—‹è½¬
+                _rotationParent.transform.Rotate(Vector3.right, -mouseDelta.y * rotationSpeed * 0.1f * direction, Space.World);
+                _rotationParent.transform.Rotate(Vector3.up, mouseDelta.x * rotationSpeed * 0.1f * direction, Space.World);
+            }
 
-            // ÏŞÖÆXÖáĞı×ª½Ç¶È
+            // æ›´æ–°ç›®æ ‡æ—‹è½¬è§’åº¦
+            _targetRotation = _rotationParent.transform.eulerAngles;
+
+            // é™åˆ¶Xè½´æ—‹è½¬è§’åº¦
             _targetRotation.x = ClampAngle(_targetRotation.x, minXRotation, maxXRotation);
             _lastMousePosition = currentMousePos;
         }
     }
 
     /// <summary>
-    /// ´¦ÀíÒÆ¶¯ÊäÈë£¨×ó¼üÍÏ¶¯£©
+    /// å¤„ç†ç§»åŠ¨è¾“å…¥ï¼ˆå·¦é”®æ‹–åŠ¨ï¼‰
     /// </summary>
     void HandleMovement()
     {
-        // ×ó¼ü°´ÏÂÊ±¼ÇÂ¼³õÊ¼×´Ì¬
+        // å·¦é”®æŒ‰ä¸‹æ—¶è®°å½•åˆå§‹çŠ¶æ€
         if (Input.GetMouseButtonDown(0))
         {
             _lastMousePosition = Input.mousePosition;
         }
 
-        // ×ó¼ü°´×¡Ê±¼ÆËãÒÆ¶¯
+        // å·¦é”®æŒ‰ä½æ—¶è®¡ç®—ç§»åŠ¨
         if (Input.GetMouseButton(0))
         {
             Vector2 currentMousePos = Input.mousePosition;
             Vector2 mouseDelta = (currentMousePos - _lastMousePosition) * moveSpeed * 0.01f;
 
-            // ½«ÆÁÄ»¿Õ¼äÒÆ¶¯×ª»»ÎªÊÀ½ç¿Õ¼äÒÆ¶¯
+            // å°†å±å¹•ç©ºé—´ç§»åŠ¨è½¬æ¢ä¸ºä¸–ç•Œç©ºé—´ç§»åŠ¨
             Vector3 moveOffset = Camera.main.transform.TransformDirection(new Vector3(mouseDelta.x, mouseDelta.y, 0));
-            moveOffset.z = 0; // ±£³ÖZÖá²»±ä£¨2DÆ½ÃæÒÆ¶¯£©
+            moveOffset.z = 0; // ä¿æŒZè½´ä¸å˜ï¼ˆ2Då¹³é¢ç§»åŠ¨ï¼‰
             _targetPosition += moveOffset;
 
-            // ÏŞÖÆÒÆ¶¯·¶Î§
+            // é™åˆ¶ç§»åŠ¨èŒƒå›´
             _targetPosition.x = Mathf.Clamp(_targetPosition.x, xMoveLimit.x, xMoveLimit.y);
             _targetPosition.y = Mathf.Clamp(_targetPosition.y, yMoveLimit.x, yMoveLimit.y);
             _targetPosition.z = Mathf.Clamp(_targetPosition.z, zMoveLimit.x, zMoveLimit.y);
@@ -166,39 +191,39 @@ public class ModelControllerWorldRotation : MonoBehaviour
     }
 
     /// <summary>
-    /// ´¦ÀíËõ·ÅÊäÈë£¨Êó±ê¹öÂÖ£©
+    /// å¤„ç†ç¼©æ”¾è¾“å…¥ï¼ˆé¼ æ ‡æ»šè½®ï¼‰
     /// </summary>
     void HandleZoom()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0)
         {
-            // ¸ù¾İ¹öÂÖÊäÈëµ÷ÕûÄ¿±êËõ·ÅÖµ£¬²¢ÏŞÖÆÔÚ·¶Î§ÄÚ
+            // æ ¹æ®æ»šè½®è¾“å…¥è°ƒæ•´ç›®æ ‡ç¼©æ”¾å€¼ï¼Œå¹¶é™åˆ¶åœ¨èŒƒå›´å†…
             _targetScale = Mathf.Clamp(_targetScale + scroll * zoomSpeed, scaleLimit.x, scaleLimit.y);
         }
     }
 
     /// <summary>
-    /// Ó¦ÓÃÆ½»¬¹ı¶ÉĞ§¹ûµ½transform
+    /// åº”ç”¨å¹³æ»‘è¿‡æ¸¡æ•ˆæœåˆ°transform
     /// </summary>
     void ApplySmoothTransforms()
     {
-        // Á¢¼´ÖØÖÃÄ£Ê½£ºÖ±½ÓÉèÖÃÄ¿±êÖµ£¬²»½øĞĞÆ½»¬
+        // ç«‹å³é‡ç½®æ¨¡å¼ï¼šç›´æ¥è®¾ç½®ç›®æ ‡å€¼ï¼Œä¸è¿›è¡Œå¹³æ»‘
         if (_useImmediateReset)
         {
             transform.eulerAngles = _targetRotation;
             transform.position = _targetPosition;
             transform.localScale = Vector3.one * _targetScale;
-            _useImmediateReset = false; // ÖØÖÃ±êÖ¾
+            _useImmediateReset = false; // é‡ç½®æ ‡å¿—
             return;
         }
 
-        // ===== Æ½»¬Ğı×ª =====
-        // ¸ù¾İÊÇ·ñÖØÖÃ×´Ì¬Ñ¡ÔñÆ½»¬Ê±¼ä
+        // ===== å¹³æ»‘æ—‹è½¬ =====
+        // æ ¹æ®æ˜¯å¦é‡ç½®çŠ¶æ€é€‰æ‹©å¹³æ»‘æ—¶é—´
         float currentRotationSmoothTime = _isResetting ?
             rotationSmoothTime / resetSpeedMultiplier : rotationSmoothTime;
 
-        // Ê¹ÓÃSmoothDampAngleÆ½»¬¹ı¶ÉÃ¿¸öĞı×ªÖá£¨´¦Àí360¶È»·ÈÆ£©
+        // ä½¿ç”¨SmoothDampAngleå¹³æ»‘è¿‡æ¸¡æ¯ä¸ªæ—‹è½¬è½´ï¼ˆå¤„ç†360åº¦ç¯ç»•ï¼‰
         float smoothX = Mathf.SmoothDampAngle(_currentRotation.x, _targetRotation.x, ref _rotationVelocity.x, currentRotationSmoothTime);
         float smoothY = Mathf.SmoothDampAngle(_currentRotation.y, _targetRotation.y, ref _rotationVelocity.y, currentRotationSmoothTime);
         float smoothZ = Mathf.SmoothDampAngle(_currentRotation.z, _targetRotation.z, ref _rotationVelocity.z, currentRotationSmoothTime);
@@ -206,14 +231,14 @@ public class ModelControllerWorldRotation : MonoBehaviour
         _currentRotation = new Vector3(smoothX, smoothY, smoothZ);
         transform.eulerAngles = _currentRotation;
 
-        // ===== Æ½»¬ÒÆ¶¯ =====
+        // ===== å¹³æ»‘ç§»åŠ¨ =====
         transform.position = Vector3.SmoothDamp(transform.position, _targetPosition, ref _positionVelocity, moveSmoothTime);
 
-        // ===== Æ½»¬Ëõ·Å =====
+        // ===== å¹³æ»‘ç¼©æ”¾ =====
         float currentScale = Mathf.SmoothDamp(transform.localScale.x, _targetScale, ref _scaleVelocity, zoomSmoothTime);
         transform.localScale = Vector3.one * currentScale;
 
-        // ¼ì²éÖØÖÃÊÇ·ñÍê³É£¨ËùÓĞÊôĞÔ¶¼½Ó½üÄ¿±êÖµ£©
+        // æ£€æŸ¥é‡ç½®æ˜¯å¦å®Œæˆï¼ˆæ‰€æœ‰å±æ€§éƒ½æ¥è¿‘ç›®æ ‡å€¼ï¼‰
         if (_isResetting &&
             Vector3.Distance(_currentRotation, _targetRotation) < 0.1f &&
             Vector3.Distance(transform.position, _targetPosition) < 0.1f &&
@@ -224,64 +249,64 @@ public class ModelControllerWorldRotation : MonoBehaviour
     }
 
     /// <summary>
-    /// ½Ç¶ÈÏŞÖÆ·½·¨£¨´¦Àí360¶È»·ÈÆ£©
+    /// è§’åº¦é™åˆ¶æ–¹æ³•ï¼ˆå¤„ç†360åº¦ç¯ç»•ï¼‰
     /// </summary>
-    /// <param name="angle">µ±Ç°½Ç¶È</param>
-    /// <param name="min">×îĞ¡½Ç¶È</param>
-    /// <param name="max">×î´ó½Ç¶È</param>
-    /// <returns>ÏŞÖÆºóµÄ½Ç¶È</returns>
+    /// <param name="angle">å½“å‰è§’åº¦</param>
+    /// <param name="min">æœ€å°è§’åº¦</param>
+    /// <param name="max">æœ€å¤§è§’åº¦</param>
+    /// <returns>é™åˆ¶åçš„è§’åº¦</returns>
     float ClampAngle(float angle, float min, float max)
     {
-        if (angle > 180) angle -= 360;  // ½«½Ç¶È×ª»»µ½-180~180·¶Î§
+        if (angle > 180) angle -= 360;  // å°†è§’åº¦è½¬æ¢åˆ°-180~180èŒƒå›´
         angle = Mathf.Clamp(angle, min, max);
-        if (angle < 0) angle += 360;    // ×ª»»»Ø0~360·¶Î§
+        if (angle < 0) angle += 360;    // è½¬æ¢å›0~360èŒƒå›´
         return angle;
     }
 
     /// <summary>
-    /// Á¢¼´ÖØÖÃÎ»ÖÃµ½Ô­µã
+    /// ç«‹å³é‡ç½®ä½ç½®åˆ°åŸç‚¹
     /// </summary>
     public void ResetPositionImmediate()
     {
         _targetPosition = Vector3.zero;
-        _positionVelocity = Vector3.zero; // ÖØÖÃËÙ¶È
-        _currentRotation = transform.eulerAngles; // ±£³Öµ±Ç°Ğı×ª
-        _targetScale = transform.localScale.x; // ±£³Öµ±Ç°Ëõ·Å
-        _useImmediateReset = true; // ÆôÓÃÁ¢¼´ÖØÖÃÄ£Ê½
+        _positionVelocity = Vector3.zero; // é‡ç½®é€Ÿåº¦
+        _currentRotation = transform.eulerAngles; // ä¿æŒå½“å‰æ—‹è½¬
+        _targetScale = transform.localScale.x; // ä¿æŒå½“å‰ç¼©æ”¾
+        _useImmediateReset = true; // å¯ç”¨ç«‹å³é‡ç½®æ¨¡å¼
     }
 
     /// <summary>
-    /// Á¢¼´ÖØÖÃĞı×ªµ½Ä¬ÈÏ½Ç¶È
+    /// ç«‹å³é‡ç½®æ—‹è½¬åˆ°é»˜è®¤è§’åº¦
     /// </summary>
     public void ResetRotationImmediate()
     {
         _targetRotation = defaultRotation;
-        _rotationVelocity = Vector3.zero; // ÖØÖÃËÙ¶È
-        _currentRotation = _targetRotation; // Í¬²½µ±Ç°Öµ
-        _targetPosition = transform.position; // ±£³Öµ±Ç°Î»ÖÃ
-        _targetScale = transform.localScale.x; // ±£³Öµ±Ç°Ëõ·Å
-        _useImmediateReset = true; // ÆôÓÃÁ¢¼´ÖØÖÃÄ£Ê½
+        _rotationVelocity = Vector3.zero; // é‡ç½®é€Ÿåº¦
+        _currentRotation = _targetRotation; // åŒæ­¥å½“å‰å€¼
+        _targetPosition = transform.position; // ä¿æŒå½“å‰ä½ç½®
+        _targetScale = transform.localScale.x; // ä¿æŒå½“å‰ç¼©æ”¾
+        _useImmediateReset = true; // å¯ç”¨ç«‹å³é‡ç½®æ¨¡å¼
     }
 
     /// <summary>
-    /// Á¢¼´ÖØÖÃËõ·Åµ½Ä¬ÈÏ´óĞ¡
+    /// ç«‹å³é‡ç½®ç¼©æ”¾åˆ°é»˜è®¤å¤§å°
     /// </summary>
     public void ResetScaleImmediate()
     {
         _targetScale = defaultScale;
-        _scaleVelocity = 0f; // ÖØÖÃËÙ¶È
-        _targetPosition = transform.position; // ±£³Öµ±Ç°Î»ÖÃ
-        _currentRotation = transform.eulerAngles; // ±£³Öµ±Ç°Ğı×ª
-        _useImmediateReset = true; // ÆôÓÃÁ¢¼´ÖØÖÃÄ£Ê½
+        _scaleVelocity = 0f; // é‡ç½®é€Ÿåº¦
+        _targetPosition = transform.position; // ä¿æŒå½“å‰ä½ç½®
+        _currentRotation = transform.eulerAngles; // ä¿æŒå½“å‰æ—‹è½¬
+        _useImmediateReset = true; // å¯ç”¨ç«‹å³é‡ç½®æ¨¡å¼
     }
 
     /// <summary>
-    /// Æ½»¬ÖØÖÃËùÓĞ×´Ì¬£¨Î»ÖÃ¡¢Ğı×ª¡¢Ëõ·Å£©
+    /// å¹³æ»‘é‡ç½®æ‰€æœ‰çŠ¶æ€ï¼ˆä½ç½®ã€æ—‹è½¬ã€ç¼©æ”¾ï¼‰
     /// </summary>
-    /// <param name="duration">ÖØÖÃ³ÖĞøÊ±¼ä£¨Ãë£©</param>
+    /// <param name="duration">é‡ç½®æŒç»­æ—¶é—´ï¼ˆç§’ï¼‰</param>
     public void ResetAllSmooth(float duration = 0.5f)
     {
-        // Èç¹ûÒÑÓĞÖØÖÃĞ­³ÌÔÚÔËĞĞ£¬ÏÈÍ£Ö¹
+        // å¦‚æœå·²æœ‰é‡ç½®åç¨‹åœ¨è¿è¡Œï¼Œå…ˆåœæ­¢
         if (_resetCoroutine != null)
         {
             StopCoroutine(_resetCoroutine);
@@ -290,32 +315,32 @@ public class ModelControllerWorldRotation : MonoBehaviour
     }
 
     /// <summary>
-    /// ÖØÖÃËùÓĞ×´Ì¬µÄĞ­³Ì
+    /// é‡ç½®æ‰€æœ‰çŠ¶æ€çš„åç¨‹
     /// </summary>
     private IEnumerator ResetAllCoroutine(float duration)
     {
-        _isResetting = true; // ±ê¼ÇÎªÖØÖÃ×´Ì¬
+        _isResetting = true; // æ ‡è®°ä¸ºé‡ç½®çŠ¶æ€
         float originalMultiplier = resetSpeedMultiplier;
-        resetSpeedMultiplier = 10f; // ¼ÓËÙÖØÖÃ¹ı³Ì
+        resetSpeedMultiplier = 10f; // åŠ é€Ÿé‡ç½®è¿‡ç¨‹
 
-        // ¼ÇÂ¼³õÊ¼ÖµÓÃÓÚ²åÖµ
+        // è®°å½•åˆå§‹å€¼ç”¨äºæ’å€¼
         Vector3 startPos = transform.position;
         Vector3 startRot = transform.eulerAngles;
         float startScale = transform.localScale.x;
 
-        // ÉèÖÃÄ¿±êÖµ
+        // è®¾ç½®ç›®æ ‡å€¼
         _targetPosition = Vector3.zero;
         _targetRotation = defaultRotation;
         _targetScale = defaultScale;
 
-        // ²åÖµ¹ı³Ì
+        // æ’å€¼è¿‡ç¨‹
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration); // ¼ÆËã²åÖµ±ÈÀı
+            float t = Mathf.Clamp01(elapsed / duration); // è®¡ç®—æ’å€¼æ¯”ä¾‹
 
-            // Ê¹ÓÃLerp½øĞĞÆ½»¬¹ı¶É£¨±ÜÃâSmoothDamp¿ÉÄÜµ¼ÖÂµÄ¿¨¶Ù£©
+            // ä½¿ç”¨Lerpè¿›è¡Œå¹³æ»‘è¿‡æ¸¡ï¼ˆé¿å…SmoothDampå¯èƒ½å¯¼è‡´çš„å¡é¡¿ï¼‰
             transform.position = Vector3.Lerp(startPos, _targetPosition, t);
             transform.eulerAngles = new Vector3(
                 Mathf.LerpAngle(startRot.x, _targetRotation.x, t),
@@ -327,48 +352,48 @@ public class ModelControllerWorldRotation : MonoBehaviour
             yield return null;
         }
 
-        // È·±£×îÖÕ×´Ì¬×¼È·
+        // ç¡®ä¿æœ€ç»ˆçŠ¶æ€å‡†ç¡®
         ResetAllImmediate();
 
-        // »Ö¸´Ô­Ê¼ÉèÖÃ
+        // æ¢å¤åŸå§‹è®¾ç½®
         resetSpeedMultiplier = originalMultiplier;
         _isResetting = false;
         _resetCoroutine = null;
     }
 
     /// <summary>
-    /// Á¢¼´ÖØÖÃËùÓĞ×´Ì¬£¨Î»ÖÃ¡¢Ğı×ª¡¢Ëõ·Å£©
+    /// ç«‹å³é‡ç½®æ‰€æœ‰çŠ¶æ€ï¼ˆä½ç½®ã€æ—‹è½¬ã€ç¼©æ”¾ï¼‰
     /// </summary>
     public void ResetAllImmediate()
     {
-        // ÉèÖÃÄ¿±êÖµ
+        // è®¾ç½®ç›®æ ‡å€¼
         _targetPosition = Vector3.zero;
         _targetRotation = defaultRotation;
         _targetScale = defaultScale;
 
-        // Í¬²½µ±Ç°Öµ
+        // åŒæ­¥å½“å‰å€¼
         _currentRotation = _targetRotation;
 
-        // ÖØÖÃËùÓĞËÙ¶È
+        // é‡ç½®æ‰€æœ‰é€Ÿåº¦
         _positionVelocity = Vector3.zero;
         _rotationVelocity = Vector3.zero;
         _scaleVelocity = 0f;
 
-        // Ö±½ÓÉèÖÃtransform
+        // ç›´æ¥è®¾ç½®transform
         transform.position = _targetPosition;
         transform.eulerAngles = _targetRotation;
         transform.localScale = Vector3.one * _targetScale;
 
-        // ÆôÓÃÁ¢¼´ÖØÖÃÄ£Ê½£¨È·±£ÏÂÒ»Ö¡²»»áÆ½»¬£©
+        // å¯ç”¨ç«‹å³é‡ç½®æ¨¡å¼ï¼ˆç¡®ä¿ä¸‹ä¸€å¸§ä¸ä¼šå¹³æ»‘ï¼‰
         _useImmediateReset = true;
     }
 
     /// <summary>
-    /// ÔÚ³¡¾°ÊÓÍ¼ÖĞ»æÖÆ¸¨ÖúGizmos
+    /// åœ¨åœºæ™¯è§†å›¾ä¸­ç»˜åˆ¶è¾…åŠ©Gizmos
     /// </summary>
     void OnDrawGizmosSelected()
     {
-        // »æÖÆÒÆ¶¯·¶Î§Á¢·½Ìå
+        // ç»˜åˆ¶ç§»åŠ¨èŒƒå›´ç«‹æ–¹ä½“
         Gizmos.color = Color.yellow;
         Vector3 center = new Vector3(
             (xMoveLimit.x + xMoveLimit.y) * 0.5f,
@@ -382,7 +407,7 @@ public class ModelControllerWorldRotation : MonoBehaviour
         );
         Gizmos.DrawWireCube(center, size);
 
-        // »æÖÆÔ­µãÎ»ÖÃ±ê¼Ç
+        // ç»˜åˆ¶åŸç‚¹ä½ç½®æ ‡è®°
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(Vector3.zero, 0.2f);
     }
