@@ -321,7 +321,6 @@ public class ModelControllerWorldRotation : MonoBehaviour
     {
         _isResetting = true; // 标记为重置状态
         float originalMultiplier = resetSpeedMultiplier;
-        resetSpeedMultiplier = 10f; // 加速重置过程
 
         // 记录初始值用于插值
         Vector3 startPos = transform.position;
@@ -342,7 +341,7 @@ public class ModelControllerWorldRotation : MonoBehaviour
 
             // 使用Lerp进行平滑过渡（避免SmoothDamp可能导致的卡顿）
             transform.position = Vector3.Lerp(startPos, _targetPosition, t);
-            transform.eulerAngles = new Vector3(
+            _rotationParent.transform.eulerAngles = new Vector3(
                 Mathf.LerpAngle(startRot.x, _targetRotation.x, t),
                 Mathf.LerpAngle(startRot.y, _targetRotation.y, t),
                 Mathf.LerpAngle(startRot.z, _targetRotation.z, t)
@@ -383,6 +382,7 @@ public class ModelControllerWorldRotation : MonoBehaviour
         transform.position = _targetPosition;
         transform.eulerAngles = _targetRotation;
         transform.localScale = Vector3.one * _targetScale;
+        _rotationParent.transform.eulerAngles = _targetRotation;
 
         // 启用立即重置模式（确保下一帧不会平滑）
         _useImmediateReset = true;
